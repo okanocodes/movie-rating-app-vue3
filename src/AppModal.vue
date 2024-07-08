@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted } from "vue";
+import { onClickOutside } from "@vueuse/core";
+import { vOnClickOutside } from "@vueuse/components";
 
 const props = defineProps({
   title: { type: String, default: null },
@@ -7,13 +8,24 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["close"]);
+
+function closeModal() {
+  console.log("close modal");
+}
+
+const onClickOutsideHandler = [
+  (ev) => {
+    console.log(ev);
+    emit("close");
+  },
+];
 </script>
 
 <template>
   <Transition name="modal">
     <div
       v-if="showModal"
-      class="fade grid bg-black text-white bg-opacity-70 fixed top-0 left-0 w-full h-full z-50 backdrop-blur-lg"
+      class="fade flex bg-black text-white bg-opacity-70 fixed top-0 left-0 w-full h-full z-50 backdrop-blur-lg"
     >
       <div class="flex justify-center items-center w-full h-fit min-h-full">
         <div
@@ -22,7 +34,10 @@ const emit = defineEmits(["close"]);
           <div class="modal-header px-10 py-5">
             <h3 class="text-xl">{{ title }}</h3>
           </div>
-          <div class="modal-body px-10 py-5 bg-slate-600 rounded-b-md">
+          <div
+            class="px-10 py-5 bg-slate-600 rounded-b-md"
+            v-on-click-outside="onClickOutsideHandler"
+          >
             <slot> </slot>
           </div>
 
@@ -57,25 +72,6 @@ const emit = defineEmits(["close"]);
 .modal-enter-from .modal-body,
 .modal-leave-to .modal-body {
   opacity: 0;
-  transform: translateY(-50px);
+  transform: translateY(-100px);
 }
-/* .modal-enter-active .modal-body {
-  transition-delay: 0.5s;
-} */
-
-/* 
-.modal-body-enter-active .modal-body,
-.modal-body-leave-active .modal-body {
-  transition: all 0.5s ease-out;
-}
-
-.modal-body-enter-from .modal-body,
-.modal-body-leave-to .modal-body {
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.modal-body-enter-active .modal-body {
-  transition-delay: 0.5s;
-} */
 </style>

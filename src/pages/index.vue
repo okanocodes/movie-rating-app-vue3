@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive, defineAsyncComponent } from "vue";
+
 import { items } from "../movies.json";
 
 import MovieItem from "../MovieItem.vue";
@@ -121,7 +122,12 @@ function removeRatings() {
         @update-rating="handleUpdateRating"
         @delete-movie="handleDeleteMovie"
         @edit-movie="handleMovieEdit"
+        v-if="movies"
       ></MovieItem>
+
+      <div v-if="!movies.length">
+        <div class="text-white">No movies found</div>
+      </div>
     </div>
     <div>
       <transition name="modal">
@@ -130,6 +136,7 @@ function removeRatings() {
             @close="showModal = false"
             title="Add movie"
             :show-modal="showModal"
+            ref="modalRef"
           >
             <MovieForm
               :show-form="showForm"
