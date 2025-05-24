@@ -1,6 +1,5 @@
 <script setup>
 import { defineAsyncComponent, reactive, ref, watchEffect } from "vue";
-import films from "../movies.json";
 import { StarIcon, ArrowLeftCircleIcon } from "@heroicons/vue/24/solid";
 const { id } = defineProps({
   id: String,
@@ -10,7 +9,9 @@ const MovieSkeleton = defineAsyncComponent(
   () => import("../MovieSkeleton.vue")
 );
 
-const movies = reactive(films.items);
+
+const films = localStorage.getItem('movies')
+const movies = reactive(films ? JSON.parse(films) : []);
 
 const loading = ref(false);
 const post = ref(null);

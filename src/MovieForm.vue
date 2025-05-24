@@ -1,5 +1,7 @@
 <script setup>
+import { useDebounceFn } from '@vueuse/core'
 import { onMounted, reactive, ref } from "vue";
+
 
 const props = defineProps({
   modelValue: { type: Object },
@@ -61,6 +63,41 @@ function handleForm() {
   }
 }
 
+function searchPoster() {
+  if (input.value) {
+    input.value.focus();
+  }
+  if (form.name.trim() === "") {
+    form.image = "";
+    return;
+  }
+
+
+const url = `https://api.themoviedb.org/3/search/movie?api_key=${import.meta.env.VITE_TMDB_API_KEY}&query=${encodeURIComponent(form.name)}`;
+  const fetchPoster = fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.results && data.results.length > 0) {
+        form.image = `https://image.tmdb.org/t/p/w500${data.results[0].poster_path}`;
+      } else {
+        form.image = "";
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching movie poster:", error);
+      form.image = "";
+    });
+
+
+
+  // Placeholder for future poster search functionality
+useDebounceFn(() => {
+  // do something
+  fetchPoster
+}, 1000)
+
+}
+
 function editMovie() {
   const data = generateData();
   emit("edit:modelValue", data);
@@ -96,6 +133,7 @@ function clearErrors() {
         name="name"
         id="name"
         v-model="form.name"
+        @input="searchPoster"
         ref="input"
       />
       <span v-if="fieldError.name" class="text-red-500"> Name is required</span>

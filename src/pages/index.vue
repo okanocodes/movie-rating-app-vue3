@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, defineAsyncComponent } from "vue";
+import { ref, reactive, defineAsyncComponent,watch } from "vue";
 
 import { items } from "../movies.json";
 
@@ -8,7 +8,23 @@ import MovieItem from "../MovieItem.vue";
 const AppModal = defineAsyncComponent(() => import("../AppModal.vue"));
 const MovieForm = defineAsyncComponent(() => import("../MovieForm.vue"));
 
-const movies = reactive(items);
+// Check if movies exist in localStorage, if not, initialize from movies.json
+if (!localStorage.getItem('movies')) {
+  localStorage.setItem('movies', JSON.stringify(items));
+}
+
+// Always read movies from localStorage
+const movies = reactive(JSON.parse(localStorage.getItem('movies')));
+
+// Watch for changes and update localStorage
+watch(
+  movies,
+  (newMovies) => {
+    localStorage.setItem('movies', JSON.stringify(newMovies));
+  },
+  { deep: true }
+);
+
 const showForm = ref(false);
 const showModal = ref(false);
 
